@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B9C3DC928C6BD570095C821 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */; };
 		3BCD3AD828A1AFC100C6C249 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCD3AD728A1AFC100C6C249 /* AppDelegate.swift */; };
 		3BCD3ADA28A1AFC100C6C249 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCD3AD928A1AFC100C6C249 /* SceneDelegate.swift */; };
 		3BCD3ADC28A1AFC100C6C249 /* LogInController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCD3ADB28A1AFC100C6C249 /* LogInController.swift */; };
@@ -37,6 +38,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BCD3AED28A1B01A00C6C249 /* ParseSwift in Frameworks */,
+				3B9C3DC928C6BD570095C821 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,7 @@
 			name = DSSUserLogIn;
 			packageProductDependencies = (
 				3BCD3AEC28A1B01A00C6C249 /* ParseSwift */,
+				3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */,
 			);
 			productName = DSSUserSignIn;
 			productReference = 3BCD3AD428A1AFC100C6C249 /* DSSUserLogIn.app */;
@@ -124,6 +127,7 @@
 			mainGroup = 3BCD3ACB28A1AFC100C6C249;
 			packageReferences = (
 				3BCD3AEB28A1B01A00C6C249 /* XCRemoteSwiftPackageReference "Parse-Swift" */,
+				3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 3BCD3AD528A1AFC100C6C249 /* Products */;
 			projectDirPath = "";
@@ -301,6 +305,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DSSUserLogIn/DSSUserLogIn.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -330,6 +335,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DSSUserLogIn/DSSUserLogIn.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -378,6 +384,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 		3BCD3AEB28A1B01A00C6C249 /* XCRemoteSwiftPackageReference "Parse-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/parse-community/Parse-Swift";
@@ -389,6 +403,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		3BCD3AEC28A1B01A00C6C249 /* ParseSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3BCD3AEB28A1B01A00C6C249 /* XCRemoteSwiftPackageReference "Parse-Swift" */;
