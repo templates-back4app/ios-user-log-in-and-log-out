@@ -8,6 +8,7 @@
 import UIKit
 import ParseSwift
 import GoogleSignIn
+import FacebookCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             serverURL: URL(string: "https://parseapi.back4app.com")!
         )
 
+        ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         return true
     }
 
@@ -40,7 +42,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
-
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        ApplicationDelegate.shared.application(
+            application,
+            open: url,
+            sourceApplication: sourceApplication,
+            annotation: annotation
+        )
+    }
 }
 
 extension AppDelegate {

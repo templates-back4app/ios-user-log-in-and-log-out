@@ -8,6 +8,7 @@
 import UIKit
 import ParseSwift
 import GoogleSignIn
+import FacebookLogin
 
 class LogInController: UIViewController {
     private let usernameTextField: UITextField = {
@@ -105,8 +106,8 @@ class LogInController: UIViewController {
         
         // Hanlders for the social media sign in buttons
         signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithGoogle), for: .touchUpInside)
-        signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
-        signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
+        signInWithFacebookButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
+        signInWithAppleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
         
         // If the user is already logged in, we redirect them to the HomeController
         guard let user = User.current else { return }
@@ -176,7 +177,7 @@ extension UIViewController {
                 // Returns the User object asociated to the GIDGoogleUser object returned by Google
                 switch result {
                 case .success(let user):
-                    // After the login success we send the user to the home screen
+                    // After the login succeeded, we send the user to the home screen
                     let homeController = HomeController()
                     homeController.user = user
 
@@ -193,7 +194,40 @@ extension UIViewController {
 // MARK: - Sign in with Facebook section
 extension UIViewController {
     @objc fileprivate func handleSignInWithFacebook() {
-        // TODO: See the sign in with Facebook guide
+        let loginManager = LoginManager() // See https://developers.facebook.com/docs/facebook-login/ios/ for more details
+        
+        loginManager.logOut() // This should be called when the user logs out from your app. For login testing purposes, we are calling it each time the user taps on the 'signInWithFacebookButton' button.
+        
+        // Method provided by the Facebook SDK. See https://developers.facebook.com/docs/facebook-login/ios/ for more details
+        loginManager.logIn(permissions: ["public_profile", "email"], from: self) { [weak self] result, error in
+            if let error = error {
+                self?.showMessage(title: "Error", message: error.localizedDescription)
+                return
+            } else if let result = result, result.isCancelled {
+                self?.showMessage(title: "Alert", message: "Sign in cancelled")
+                return
+            }
+            
+            // Once facebook successfully signed in the user, we retrieve the information related to the sign in process via the AccessToken class
+            guard let accessToken = AccessToken.current else { fatalError("This dhould never hapen.") }
+            // See https://developers.facebook.com/docs/facebook-login/ios/ for more details about the AccessToken class
+            
+            // With the accessToken returned by Facebook, you need to sign in the user on your Back4App application
+            User.facebook.login(userId: accessToken.userID, accessToken: accessToken.tokenString) { [weak self] result in
+                // Returns the User object asociated to the facebook user returned by Facebook
+                switch result {
+                case .success(let user):
+                    // After the login succeeded, we send the user to the home screen
+                    let homeController = HomeController()
+                    homeController.user = user
+
+                    self?.navigationController?.pushViewController(homeController, animated: true)
+                case .failure(let error):
+                    // Handle the error if the login process failed
+                    self?.showMessage(title: "Failed to sign in", message: error.message)
+                }
+            }
+        }
     }
 }
 

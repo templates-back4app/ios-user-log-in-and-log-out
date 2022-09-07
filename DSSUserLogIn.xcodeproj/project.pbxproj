@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B4D13DA28C7863700186107 /* FacebookLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4D13D928C7863700186107 /* FacebookLogin */; };
+		3B4D13DD28C789E800186107 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4D13DC28C789E800186107 /* FacebookCore */; };
+		3B4D13DF28C789E800186107 /* FacebookLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4D13DE28C789E800186107 /* FacebookLogin */; };
 		3B9C3DC928C6BD570095C821 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */; };
 		3BCD3AD828A1AFC100C6C249 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCD3AD728A1AFC100C6C249 /* AppDelegate.swift */; };
 		3BCD3ADA28A1AFC100C6C249 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BCD3AD928A1AFC100C6C249 /* SceneDelegate.swift */; };
@@ -37,8 +40,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B4D13DF28C789E800186107 /* FacebookLogin in Frameworks */,
 				3BCD3AED28A1B01A00C6C249 /* ParseSwift in Frameworks */,
 				3B9C3DC928C6BD570095C821 /* GoogleSignInSwift in Frameworks */,
+				3B4D13DA28C7863700186107 /* FacebookLogin in Frameworks */,
+				3B4D13DD28C789E800186107 /* FacebookCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +102,9 @@
 			packageProductDependencies = (
 				3BCD3AEC28A1B01A00C6C249 /* ParseSwift */,
 				3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */,
+				3B4D13D928C7863700186107 /* FacebookLogin */,
+				3B4D13DC28C789E800186107 /* FacebookCore */,
+				3B4D13DE28C789E800186107 /* FacebookLogin */,
 			);
 			productName = DSSUserSignIn;
 			productReference = 3BCD3AD428A1AFC100C6C249 /* DSSUserLogIn.app */;
@@ -128,6 +137,8 @@
 			packageReferences = (
 				3BCD3AEB28A1B01A00C6C249 /* XCRemoteSwiftPackageReference "Parse-Swift" */,
 				3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				3B4D13D828C7863700186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+				3B4D13DB28C789E800186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
 			);
 			productRefGroup = 3BCD3AD528A1AFC100C6C249 /* Products */;
 			projectDirPath = "";
@@ -384,6 +395,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3B4D13D828C7863700186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		3B4D13DB28C789E800186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
 		3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -403,6 +430,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3B4D13D928C7863700186107 /* FacebookLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B4D13D828C7863700186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookLogin;
+		};
+		3B4D13DC28C789E800186107 /* FacebookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B4D13DB28C789E800186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookCore;
+		};
+		3B4D13DE28C789E800186107 /* FacebookLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B4D13DB28C789E800186107 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookLogin;
+		};
 		3B9C3DC828C6BD570095C821 /* GoogleSignInSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3B9C3DC728C6BD570095C821 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

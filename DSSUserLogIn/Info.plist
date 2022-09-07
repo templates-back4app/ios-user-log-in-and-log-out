@@ -9,7 +9,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.241413086039-4c7fgnlmvpg4hchq0stou2d4eaucrkhi</string>
+				<string>com.googleusercontent.apps.GOOGLES_URL_SCHEME</string>
+                <string>fbAPP_ID</string>
 			</array>
 		</dict>
 	</array>
@@ -32,5 +33,16 @@
 			</array>
 		</dict>
 	</dict>
+    <key>FacebookAppID</key>
+    <string>APP_ID</string>
+    <key>FacebookClientToken</key>
+    <string>CLIENT_TOKEN</string>
+    <key>Back4AppSignIn</key>
+    <string>Back4App signin</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>fbapi</string>
+      <string>fb-messenger-share-api</string>
+    </array>
 </dict>
 </plist>
