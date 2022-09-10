@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Back4AppSignIn</key>
+	<string>Back4App signin</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -10,9 +12,18 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.GOOGLES_URL_SCHEME</string>
-                <string>fbAPP_ID</string>
+				<string>fbAPP_ID</string>
 			</array>
 		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>APP_ID</string>
+	<key>FacebookClientToken</key>
+	<string>CLIENT_TOKEN</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -33,16 +44,5 @@
 			</array>
 		</dict>
 	</dict>
-    <key>FacebookAppID</key>
-    <string>APP_ID</string>
-    <key>FacebookClientToken</key>
-    <string>CLIENT_TOKEN</string>
-    <key>Back4AppSignIn</key>
-    <string>Back4App signin</string>
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-      <string>fbapi</string>
-      <string>fb-messenger-share-api</string>
-    </array>
 </dict>
 </plist>

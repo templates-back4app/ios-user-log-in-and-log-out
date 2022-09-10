@@ -9,6 +9,7 @@ import UIKit
 import ParseSwift
 import GoogleSignIn
 import FacebookLogin
+import AuthenticationServices
 
 class LogInController: UIViewController {
     private let usernameTextField: UITextField = {
@@ -49,6 +50,13 @@ class LogInController: UIViewController {
         return button
     }()
     
+    private let signInWithTwitterButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "twitterIcon"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
+    }()
+    
     private let signInWithAppleButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "appleIcon"), for: .normal)
@@ -78,7 +86,7 @@ class LogInController: UIViewController {
         
         // Social media sign in buttons
         let buttonsStackViewHeight: CGFloat = 50
-        let buttonsStackView = UIStackView(arrangedSubviews: [signInWithGoogleButton, signInWithFacebookButton, signInWithAppleButton])
+        let buttonsStackView = UIStackView(arrangedSubviews: [signInWithGoogleButton, signInWithFacebookButton, signInWithTwitterButton, signInWithAppleButton])
         buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
         buttonsStackView.spacing = 8
         buttonsStackView.axis = .horizontal
@@ -107,6 +115,7 @@ class LogInController: UIViewController {
         // Hanlders for the social media sign in buttons
         signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithGoogle), for: .touchUpInside)
         signInWithFacebookButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
+        signInWithTwitterButton.addTarget(self, action: #selector(handleSignInWithTwitter), for: .touchUpInside)
         signInWithAppleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
         
         // If the user is already logged in, we redirect them to the HomeController
@@ -153,7 +162,7 @@ class LogInController: UIViewController {
 }
 
 // MARK: - Sign in with Google section
-extension UIViewController {
+extension LogInController {
     @objc fileprivate func handleSignInWithGoogle() {
         GIDSignIn.sharedInstance.signOut() // This should be called when the user logs out from your app. For login testing purposes, we are calling it each time the user taps on the 'signInWithGoogleButton' button.
         
@@ -178,6 +187,7 @@ extension UIViewController {
                 switch result {
                 case .success(let user):
                     // After the login succeeded, we send the user to the home screen
+                    // Additionally, you can complete the user's information with the data provided by Google
                     let homeController = HomeController()
                     homeController.user = user
 
@@ -192,7 +202,7 @@ extension UIViewController {
 }
 
 // MARK: - Sign in with Facebook section
-extension UIViewController {
+extension LogInController {
     @objc fileprivate func handleSignInWithFacebook() {
         let loginManager = LoginManager() // See https://developers.facebook.com/docs/facebook-login/ios/ for more details
         
@@ -218,6 +228,7 @@ extension UIViewController {
                 switch result {
                 case .success(let user):
                     // After the login succeeded, we send the user to the home screen
+                    // Additionally, you can complete the user's information with the data provided by Facebook
                     let homeController = HomeController()
                     homeController.user = user
 
@@ -231,10 +242,67 @@ extension UIViewController {
     }
 }
 
+// MARK: Sign in with Twitter section
+extension LogInController {
+    @objc fileprivate func handleSignInWithTwitter() {
+        // TODO: See the sign in with Twitter guide
+    }
+}
+
 // MARK: - Sign in with Apple section
-extension UIViewController {
+extension LogInController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     @objc fileprivate func handleSignInWithApple() {
-        // TODO: See the sign in with Apple guide
+        // As requested by apple, we setup the necessary objects to sign in with Apple.
+        // See https://help.apple.com/developer-account/#/devde676e696 for more details
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        
+        // Presents the sign in with Apple form and the result will be handled by the ASAuthorizationControllerDelegate delegate
+        authorizationController.performRequests()
+    }
+    
+    // ASAuthorizationControllerDelegate
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        // The ASAuthorization class returned by Apple contains the neccessary information
+        guard let credentials = authorization.credential as? ASAuthorizationAppleIDCredential else {
+            return showMessage(title: "Sign in with Apple", message: "Invalid credentials")
+        }
+        
+        guard let identityToken = credentials.identityToken else {
+            return showMessage(title: "Sign in with Apple", message: "Token not found")
+        }
+        
+        // We log in the user with the tokem generated by Apple
+        User.apple.login(user: credentials.user, identityToken: identityToken) { [weak self] result in
+            switch result {
+            case .success(let user):
+                // After the login succeeded, we send the user to the home screen
+                // Additionally, you can complete the user's information with the data provided by Apple
+                let homeController = HomeController()
+                homeController.user = user
+                
+                self?.navigationController?.pushViewController(homeController, animated: true)
+            case .failure(let error):
+                self?.showMessage(title: "Error", message: error.message)
+            }
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        showMessage(title: "Error", message: error.localizedDescription)
+    }
+    
+    // ASAuthorizationControllerPresentationContextProviding
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let window = view.window else { fatalError("No UIWindow found!") }
+        return window
     }
 }
 
