@@ -49,14 +49,7 @@ class LogInController: UIViewController {
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
-    
-    private let signInWithTwitterButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(named: "twitterIcon"), for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
-        return button
-    }()
-    
+        
     private let signInWithAppleButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "appleIcon"), for: .normal)
@@ -86,7 +79,7 @@ class LogInController: UIViewController {
         
         // Social media sign in buttons
         let buttonsStackViewHeight: CGFloat = 50
-        let buttonsStackView = UIStackView(arrangedSubviews: [signInWithGoogleButton, signInWithFacebookButton, signInWithTwitterButton, signInWithAppleButton])
+        let buttonsStackView = UIStackView(arrangedSubviews: [signInWithGoogleButton, signInWithFacebookButton, signInWithAppleButton])
         buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
         buttonsStackView.spacing = 8
         buttonsStackView.axis = .horizontal
@@ -115,7 +108,6 @@ class LogInController: UIViewController {
         // Hanlders for the social media sign in buttons
         signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithGoogle), for: .touchUpInside)
         signInWithFacebookButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
-        signInWithTwitterButton.addTarget(self, action: #selector(handleSignInWithTwitter), for: .touchUpInside)
         signInWithAppleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
         
         // If the user is already logged in, we redirect them to the HomeController
@@ -239,13 +231,6 @@ extension LogInController {
                 }
             }
         }
-    }
-}
-
-// MARK: Sign in with Twitter section
-extension LogInController {
-    @objc fileprivate func handleSignInWithTwitter() {
-        // TODO: See the sign in with Twitter guide
     }
 }
 
