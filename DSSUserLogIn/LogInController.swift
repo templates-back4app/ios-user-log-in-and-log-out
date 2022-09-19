@@ -105,7 +105,7 @@ class LogInController: UIViewController {
         // Adds the method that will be called when the user taps the login button
         logInButton.addTarget(self, action: #selector(handleLogIn), for: .touchUpInside)
         
-        // Hanlders for the social media sign in buttons
+        // Handlers for the social media sign in buttons
         signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithGoogle), for: .touchUpInside)
         signInWithFacebookButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
         signInWithAppleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
@@ -179,7 +179,7 @@ extension LogInController {
                 switch result {
                 case .success(let user):
                     // After the login succeeded, we send the user to the home screen
-                    // Additionally, you can complete the user's information with the data provided by Google
+                    // Additionally, you can complete the user information with the data provided by Google
                     let homeController = HomeController()
                     homeController.user = user
 
@@ -210,9 +210,8 @@ extension LogInController {
                 return
             }
             
-            // Once facebook successfully signed in the user, we retrieve the information related to the sign in process via the AccessToken class
-            guard let accessToken = AccessToken.current else { fatalError("This dhould never hapen.") }
-            // See https://developers.facebook.com/docs/facebook-login/ios/ for more details about the AccessToken class
+            // Once facebook successfully signed in the user, we retrieve the information related to the sign in process via the result.token object, an AccessToken class type
+            guard let accessToken = result?.token else { fatalError("This dhould never hapen.") }
             
             // With the accessToken returned by Facebook, you need to sign in the user on your Back4App application
             User.facebook.login(userId: accessToken.userID, accessToken: accessToken.tokenString) { [weak self] result in
@@ -220,7 +219,7 @@ extension LogInController {
                 switch result {
                 case .success(let user):
                     // After the login succeeded, we send the user to the home screen
-                    // Additionally, you can complete the user's information with the data provided by Facebook
+                    // Additionally, you can complete the user information with the data provided by Facebook
                     let homeController = HomeController()
                     homeController.user = user
 
@@ -237,38 +236,39 @@ extension LogInController {
 // MARK: - Sign in with Apple section
 extension LogInController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     @objc fileprivate func handleSignInWithApple() {
-        // As requested by apple, we setup the necessary objects to sign in with Apple.
+        // As requested by apple, we set up the necessary objects to implement the sign in with Apple flow.
         // See https://help.apple.com/developer-account/#/devde676e696 for more details
         let provider = ASAuthorizationAppleIDProvider()
-        let request = provider.createRequest()
+        let request: ASAuthorizationAppleIDRequest = provider.createRequest()
+        
         request.requestedScopes = [.fullName, .email]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
         
-        // Presents the sign in with Apple form and the result will be handled by the ASAuthorizationControllerDelegate delegate
+        // Presents the sign in with Apple sheet and the result will be handled by the ASAuthorizationControllerDelegate delegate
         authorizationController.performRequests()
     }
     
     // ASAuthorizationControllerDelegate
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        // The ASAuthorization class returned by Apple contains the neccessary information
-        guard let credentials = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            return showMessage(title: "Sign in with Apple", message: "Invalid credentials")
+        // We cast the (ASAuthorization) authorization object to an ASAuthorizationAppleIDCredential object
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+            return showMessage(title: "Sign in with Apple", message: "Invalid credential")
         }
         
-        guard let identityToken = credentials.identityToken else {
+        guard let identityToken = credential.identityToken else {
             return showMessage(title: "Sign in with Apple", message: "Token not found")
         }
         
-        // We log in the user with the tokem generated by Apple
-        User.apple.login(user: credentials.user, identityToken: identityToken) { [weak self] result in
+        // We log in the user with the token generated by Apple
+        User.apple.login(user: credential.user, identityToken: identityToken) { [weak self] result in
             switch result {
             case .success(let user):
                 // After the login succeeded, we send the user to the home screen
-                // Additionally, you can complete the user's information with the data provided by Apple
+                // Additionally, you can complete the user information with the data provided by Apple
                 let homeController = HomeController()
                 homeController.user = user
                 

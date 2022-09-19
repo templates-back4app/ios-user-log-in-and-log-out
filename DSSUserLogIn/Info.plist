@@ -12,14 +12,14 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.GOOGLES_URL_SCHEME</string>
-				<string>fbAPP_ID</string>
+				<string>fb1429603104213193</string>
 			</array>
 		</dict>
 	</array>
 	<key>FacebookAppID</key>
-	<string>APP_ID</string>
+	<string>1429603104213193</string>
 	<key>FacebookClientToken</key>
-	<string>CLIENT_TOKEN</string>
+	<string>aab501b2eb464d53aee016002a3cc26b</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
