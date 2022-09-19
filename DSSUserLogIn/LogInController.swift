@@ -7,6 +7,9 @@
 
 import UIKit
 import ParseSwift
+import GoogleSignIn
+import FacebookLogin
+import AuthenticationServices
 
 class LogInController: UIViewController {
     private let usernameTextField: UITextField = {
@@ -33,6 +36,27 @@ class LogInController: UIViewController {
         return button
     }()
     
+    private let signInWithGoogleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "googleIcon"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
+    }()
+    
+    private let signInWithFacebookButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "facebookIcon"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
+    }()
+        
+    private let signInWithAppleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "appleIcon"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -53,8 +77,38 @@ class LogInController: UIViewController {
         stackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.7).isActive = true
         stackView.heightAnchor.constraint(equalToConstant: stackViewHeight).isActive = true
         
+        // Social media sign in buttons
+        let buttonsStackViewHeight: CGFloat = 50
+        let buttonsStackView = UIStackView(arrangedSubviews: [signInWithGoogleButton, signInWithFacebookButton, signInWithAppleButton])
+        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStackView.spacing = 8
+        buttonsStackView.axis = .horizontal
+        buttonsStackView.distribution = .fillEqually
+        
+        view.addSubview(buttonsStackView)
+        buttonsStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        buttonsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12).isActive = true
+        buttonsStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.7).isActive = true
+        buttonsStackView.heightAnchor.constraint(equalToConstant: buttonsStackViewHeight).isActive = true
+        
+        // "Sign in with" label
+        let signInWithLabel = UILabel()
+        signInWithLabel.text = "Or sign in with"
+        signInWithLabel.textAlignment = .center
+        signInWithLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(signInWithLabel)
+        signInWithLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        signInWithLabel.bottomAnchor.constraint(equalTo: buttonsStackView.topAnchor, constant: -12).isActive = true
+        signInWithLabel.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.7).isActive = true
+        
         // Adds the method that will be called when the user taps the login button
         logInButton.addTarget(self, action: #selector(handleLogIn), for: .touchUpInside)
+        
+        // Handlers for the social media sign in buttons
+        signInWithGoogleButton.addTarget(self, action: #selector(handleSignInWithGoogle), for: .touchUpInside)
+        signInWithFacebookButton.addTarget(self, action: #selector(handleSignInWithFacebook), for: .touchUpInside)
+        signInWithAppleButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
         
         // If the user is already logged in, we redirect them to the HomeController
         guard let user = User.current else { return }
@@ -80,22 +134,6 @@ class LogInController: UIViewController {
     ///   - username: User's username
     ///   - password: User's password
     private func logIn(with username: String, password: String) {
-//        // Logs in the user synchronously, it throws a ParseError error if something happened.
-//        // This should be executed in a background thread!
-//        do {
-//            let loggedInUser = try User.login(username: username, password: password)
-//
-//            // After the login success we send the user to the home screen
-//            let homeController = HomeController()
-//            homeController.user = loggedInUser
-//
-//            navigationController?.pushViewController(homeController, animated: true)
-//        } catch let error as ParseError {
-//            showMessage(title: "Error", message: "Failed to log in: \(error.message)")
-//        } catch {
-//            showMessage(title: "Error", message: "Failed to log in: \(error.localizedDescription)")
-//        }
-        
         // Logs in the user asynchronously
         User.login(username: username, password: password) { [weak self] result in
             switch result {
@@ -115,6 +153,145 @@ class LogInController: UIViewController {
     }
 }
 
+// MARK: - Sign in with Google section
+extension LogInController {
+    @objc fileprivate func handleSignInWithGoogle() {
+        GIDSignIn.sharedInstance.signOut() // This should be called when the user logs out from your app. For login testing purposes, we are calling it each time the user taps on the 'signInWithGoogleButton' button.
+        
+        let signInConfig = GIDConfiguration(clientID: "MY_CLIENT_ID") // See https://developers.google.com/identity/sign-in/ios/sign-in for more details
+        
+        // Method provided by the GoogleSignIn framework. See https://developers.google.com/identity/sign-in/ios/sign-in for more details
+        GIDSignIn.sharedInstance.signIn(with: signInConfig, presenting: self) { [weak self] googleUser, error in
+            if let error = error {
+                self?.showMessage(title: "Error", message: error.localizedDescription)
+                return
+            }
+            
+            // After Google returns a successful sign in, we get the users id and idToken
+            guard let googleUser = googleUser,
+                  let userId = googleUser.userID,
+                  let idToken = googleUser.authentication.idToken
+            else { fatalError("This should never happen!?") }
+            
+            // With the user information returned by Google, you need to sign in the user on your Back4App application
+            User.google.login(id: userId, idToken: idToken) { result in
+                // Returns the User object asociated to the GIDGoogleUser object returned by Google
+                switch result {
+                case .success(let user):
+                    // After the login succeeded, we send the user to the home screen
+                    // Additionally, you can complete the user information with the data provided by Google
+                    let homeController = HomeController()
+                    homeController.user = user
+
+                    self?.navigationController?.pushViewController(homeController, animated: true)
+                case .failure(let error):
+                    // Handle the error if the login process failed
+                    self?.showMessage(title: "Failed to sign in", message: error.message)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Sign in with Facebook section
+extension LogInController {
+    @objc fileprivate func handleSignInWithFacebook() {
+        let loginManager = LoginManager() // See https://developers.facebook.com/docs/facebook-login/ios/ for more details
+        
+        loginManager.logOut() // This should be called when the user logs out from your app. For login testing purposes, we are calling it each time the user taps on the 'signInWithFacebookButton' button.
+        
+        // Method provided by the Facebook SDK. See https://developers.facebook.com/docs/facebook-login/ios/ for more details
+        loginManager.logIn(permissions: ["public_profile", "email"], from: self) { [weak self] result, error in
+            if let error = error {
+                self?.showMessage(title: "Error", message: error.localizedDescription)
+                return
+            } else if let result = result, result.isCancelled {
+                self?.showMessage(title: "Alert", message: "Sign in cancelled")
+                return
+            }
+            
+            // Once facebook successfully signed in the user, we retrieve the information related to the sign in process via the result.token object, an AccessToken class type
+            guard let accessToken = result?.token else { fatalError("This dhould never hapen.") }
+            
+            // With the accessToken returned by Facebook, you need to sign in the user on your Back4App application
+            User.facebook.login(userId: accessToken.userID, accessToken: accessToken.tokenString) { [weak self] result in
+                // Returns the User object asociated to the facebook user returned by Facebook
+                switch result {
+                case .success(let user):
+                    // After the login succeeded, we send the user to the home screen
+                    // Additionally, you can complete the user information with the data provided by Facebook
+                    let homeController = HomeController()
+                    homeController.user = user
+
+                    self?.navigationController?.pushViewController(homeController, animated: true)
+                case .failure(let error):
+                    // Handle the error if the login process failed
+                    self?.showMessage(title: "Failed to sign in", message: error.message)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Sign in with Apple section
+extension LogInController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    @objc fileprivate func handleSignInWithApple() {
+        // As requested by apple, we set up the necessary objects to implement the sign in with Apple flow.
+        // See https://help.apple.com/developer-account/#/devde676e696 for more details
+        let provider = ASAuthorizationAppleIDProvider()
+        let request: ASAuthorizationAppleIDRequest = provider.createRequest()
+        
+        request.requestedScopes = [.fullName, .email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        
+        // Presents the sign in with Apple sheet and the result will be handled by the ASAuthorizationControllerDelegate delegate
+        authorizationController.performRequests()
+    }
+    
+    // ASAuthorizationControllerDelegate
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        // We cast the (ASAuthorization) authorization object to an ASAuthorizationAppleIDCredential object
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+            return showMessage(title: "Sign in with Apple", message: "Invalid credential")
+        }
+        
+        guard let identityToken = credential.identityToken else {
+            return showMessage(title: "Sign in with Apple", message: "Token not found")
+        }
+        
+        // We log in the user with the token generated by Apple
+        User.apple.login(user: credential.user, identityToken: identityToken) { [weak self] result in
+            switch result {
+            case .success(let user):
+                // After the login succeeded, we send the user to the home screen
+                // Additionally, you can complete the user information with the data provided by Apple
+                let homeController = HomeController()
+                homeController.user = user
+                
+                self?.navigationController?.pushViewController(homeController, animated: true)
+            case .failure(let error):
+                self?.showMessage(title: "Error", message: error.message)
+            }
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        showMessage(title: "Error", message: error.localizedDescription)
+    }
+    
+    // ASAuthorizationControllerPresentationContextProviding
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let window = view.window else { fatalError("No UIWindow found!") }
+        return window
+    }
+}
+
+// MARK: - Helpers
 extension UIViewController {
     
     /// Presents an alert with a title, a message and a back button.
